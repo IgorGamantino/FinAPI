@@ -7,9 +7,11 @@ app.use(express.json());
 
 const customers = [];
 
-app.post("/account", (request,response)=> {
+// Create account
+app.post("/account", (request,response) => {
  const { cpf, name } = request.body;
 
+ //obs: o some() é um funçao que busca no array e retorna true ou false
   const customerAlreadyExistes = customers.some((customer) => customer.cpf === cpf)
 
   if(customerAlreadyExistes) {
@@ -26,4 +28,17 @@ app.post("/account", (request,response)=> {
  return response.status(201).json({sucess: 'Account created successfully' })
 
 });
+
+// Get statement user
+app.get('/statement/:cpf',(request,response) => {
+  const { cpf } = request.params;
+
+  //obs: diferente da função some() utilizada a cima, o find 
+  //retorna o primeiro objeto encontrado
+  const customer = customers.find((customer) => customer.cpf === cpf)
+
+  return response.status(200).json(customer.statement)
+})
+
+
 app.listen(1000)
