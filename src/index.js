@@ -24,7 +24,7 @@ function verifyIfExistsAccountCPF(request,response, next){
 }
 
 // Create account
-app.post("/account", (request,response) => {
+app.post("/account", (request, response) => {
  const { cpf, name } = request.body;
 
  //obs: o some() é um funçao que busca no array e retorna true ou false
@@ -46,11 +46,32 @@ app.post("/account", (request,response) => {
 });
 
 // Get statement user
-app.get('/statement',verifyIfExistsAccountCPF, (request,response) => {
+app.get('/statement',verifyIfExistsAccountCPF, (request, response) => {
   const { customer } = request
 
   return response.status(200).json(customer.statement)
+});
+
+// create deposit statement
+app.post('/deposit',verifyIfExistsAccountCPF,(request, response) => {
+  const { description, amount } = request.body;
+
+  const { customer } = request
+
+  const statementOperation = {
+    description,
+    amount,
+    create_at: new Date(),
+    type: 'credit',
+  }
+
+  customer.statement.push(statementOperation);
+
+  return response.status(201).json({sucess: 'Dinheiro depositado'})
+
+
 })
+
 
 
 app.listen(1000)
