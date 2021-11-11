@@ -30,12 +30,16 @@ app.post("/account", (request,response) => {
 });
 
 // Get statement user
-app.get('/statement/:cpf',(request,response) => {
-  const { cpf } = request.params;
+app.get('/statement',(request,response) => {
+  const { cpf } = request.headers;
 
   //obs: diferente da função some() utilizada a cima, o find 
   //retorna o primeiro objeto encontrado
   const customer = customers.find((customer) => customer.cpf === cpf)
+
+  if(!customer){
+    return response.status(400).json({error: 'Customer not found'})
+  }
 
   return response.status(200).json(customer.statement)
 })
