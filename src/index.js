@@ -7,6 +7,22 @@ app.use(express.json());
 
 const customers = [];
 
+// Middlerare
+function verifyIfExistsAccountCPF(request,response, next){
+  const { cpf } = request.headers;
+
+  //obs: diferente da função some() utilizada a cima, o find 
+  //retorna o primeiro objeto encontrado
+  const customer = customers.find((customer) => customer.cpf === cpf)
+
+  if(!customer){
+    return response.status(400).json({error: 'Customer not found'})
+  }
+
+   request.customer = customer
+   return next()
+}
+
 // Create account
 app.post("/account", (request,response) => {
  const { cpf, name } = request.body;
@@ -30,16 +46,8 @@ app.post("/account", (request,response) => {
 });
 
 // Get statement user
-app.get('/statement',(request,response) => {
-  const { cpf } = request.headers;
-
-  //obs: diferente da função some() utilizada a cima, o find 
-  //retorna o primeiro objeto encontrado
-  const customer = customers.find((customer) => customer.cpf === cpf)
-
-  if(!customer){
-    return response.status(400).json({error: 'Customer not found'})
-  }
+app.get('/statement',verifyIfExistsAccountCPF, (request,response) => {
+  const { customer } = request
 
   return response.status(200).json(customer.statement)
 })
