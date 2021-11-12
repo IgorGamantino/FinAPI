@@ -1,4 +1,3 @@
-const { application, request, response } = require('express');
 const express = require('express')
 const { v4: uuidv4 } = require('uuid')
 
@@ -139,11 +138,32 @@ app.put('/account', verifyIfExistsAccountCPF,(request,response) => {
 
 // get user
  app.get('/account', verifyIfExistsAccountCPF,(request,response)=> {
-  const {customer } = request;
+  const { customer } = request;
 
   return response.json(customer)
  })
 
- 
+ app.delete('/account',verifyIfExistsAccountCPF,(request, response) => {
+   const { customer } = request
+
+    customers.splice(customer, 1)
+
+    response.status(204).json({sucess: 'Account removed sucess!'})
+ })
+
+ app.get('/account/all',(request, response)=> {
+  const { cpf } = request.headers;
+  const cpfAdmin = 111111
+
+  const cpfNumber = Number(cpf)
+
+  if(cpfNumber === cpfAdmin){
+    return response.status(200).json(customers)
+  }else {
+
+    return response.status(400).json({error: 'voce nao tem permissao!'})
+  }
+
+ })
 
 app.listen(1000)
