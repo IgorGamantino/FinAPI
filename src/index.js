@@ -75,7 +75,7 @@ app.post('/deposit',verifyIfExistsAccountCPF,(request, response) => {
   const statementOperation = {
     description,
     amount,
-    create_at: new Date(),
+    created_at: new Date(),
     type: 'credit',
   }
 
@@ -97,7 +97,7 @@ app.post('/withdraw',verifyIfExistsAccountCPF,(request, response) => {
 
   const statementOperation = {
     amount,
-    create_at: new Date(),
+    created_at: new Date(),
     type: 'debit',
   }
 
@@ -106,7 +106,23 @@ app.post('/withdraw',verifyIfExistsAccountCPF,(request, response) => {
   return response.status(201).json({sucess: 'cash withdrawn'})
 })
 
+//statement list by day
+app.get('/statement/:date',verifyIfExistsAccountCPF, (request, response) => {
+  const { customer } = request
+  const { date } = request.query;
 
+  // formantando data para poder retornar todo o extrato do dia inteiro
+  const dateFormat  = new Date(date + " 00:00");
+   
+  const statement = customer.statement.filter((statement)=> statement.created_at.toDateString() === 
+  new Date(dateFormat).toDateString())
 
+  if(statement.length > 0) {
+    return response.status(200).json(statement)
+  }
+
+  return response.status(400).json({error: 'nao a transação nesse dia'})
+
+});
 
 app.listen(1000)
