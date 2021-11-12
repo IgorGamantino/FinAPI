@@ -1,3 +1,4 @@
+const { application, request, response } = require('express');
 const express = require('express')
 const { v4: uuidv4 } = require('uuid')
 
@@ -124,5 +125,25 @@ app.get('/statement/:date',verifyIfExistsAccountCPF, (request, response) => {
   return response.status(400).json({error: 'nao a transação nesse dia'})
 
 });
+
+
+// alterando o nome do usuario
+app.put('/account', verifyIfExistsAccountCPF,(request,response) => {
+  const { name} = request.body;
+  const {customer } = request;
+
+  customer.name = name;
+
+  return response.status(200).json({sucess: 'nome atualizado'})
+ });
+
+// get user
+ app.get('/account', verifyIfExistsAccountCPF,(request,response)=> {
+  const {customer } = request;
+
+  return response.json(customer)
+ })
+
+ 
 
 app.listen(1000)
